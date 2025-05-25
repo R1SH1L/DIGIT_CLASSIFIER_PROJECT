@@ -1,9 +1,3 @@
-"""
-Digit Classifier Package
-
-A modular handwritten digit classification system using scikit-learn.
-"""
-
 __version__ = "1.0.0"
 __author__ = "Your Name"
 

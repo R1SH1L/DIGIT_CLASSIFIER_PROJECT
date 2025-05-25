@@ -1,17 +1,11 @@
-"""
-Streamlit application for handwritten digit classification
-"""
-
 import streamlit as st
 from streamlit_drawable_canvas import st_canvas
 import numpy as np
 import sys
 import os
 
-# Add src directory to Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
-# Import custom modules
 from data_loader import load_mnist_data, get_sample_image
 from model_trainer import train_digit_classifier, evaluate_model
 from predictor import (
@@ -22,7 +16,6 @@ from predictor import (
 )
 from utils import get_model_info, format_confidence, validate_image_input
 
-# Page configuration
 st.set_page_config(
     page_title="Digit Classifier",
     page_icon="🧠",
@@ -32,7 +25,6 @@ st.set_page_config(
 st.title("🧠 Handwritten Digit Classifier")
 st.markdown("Choose an input method and classify handwritten digits using AI!")
 
-# Load data and train model
 @st.cache_data
 def get_data():
     return load_mnist_data()
@@ -42,21 +34,18 @@ def get_model():
     X_train, _, y_train, _ = get_data()
     return train_digit_classifier(X_train, y_train)
 
-# Initialize data and model
 with st.spinner("Loading data and training model..."):
     X_train, X_test, y_train, y_test = get_data()
     model = get_model()
 
 st.success("✅ Model ready!")
 
-# Sidebar: Input method selection
 st.sidebar.title("🎯 Choose Input Method")
 method = st.sidebar.radio(
     "Select input type:", 
     ["Draw Digit", "MNIST Test Image", "Upload Image"]
 )
 
-# Main content area
 if method == "Draw Digit":
     st.markdown("### ✏️ Draw a digit (0-9) in the canvas below:")
     
@@ -76,7 +65,6 @@ if method == "Draw Digit":
     with col1:
         if st.button("🔮 Predict Digit", type="primary", use_container_width=True):
             if validate_image_input(canvas_result.image_data):
-                # Preprocess and predict
                 processed_image = preprocess_canvas_image(canvas_result.image_data)
                 prediction_details = get_prediction_details(model, processed_image)
                 
@@ -85,7 +73,6 @@ if method == "Draw Digit":
                     st.info(f"**Confidence: {format_confidence(prediction_details['confidence'])}**")
                     st.progress(prediction_details['confidence'])
                     
-                    # Show processed image
                     with st.expander("🔍 View processed image"):
                         display_img = processed_image.reshape(28, 28)
                         st.image(display_img, caption="28x28 processed", width=140)
@@ -101,7 +88,6 @@ elif method == "MNIST Test Image":
     
     idx = st.sidebar.slider("Select Test Image Index", 0, len(X_test) - 1, 0)
     
-    # Get sample image
     image, true_label = get_sample_image(X_test, y_test, idx)
     
     col1, col2 = st.columns(2)
@@ -110,14 +96,12 @@ elif method == "MNIST Test Image":
         st.image(image, caption=f"Ground Truth: {true_label}", width=200)
     
     with col2:
-        # Make prediction
         prediction, confidence = predict_digit(model, X_test[idx].reshape(1, -1))
         
         st.metric("🎯 Predicted", prediction)
         st.metric("✅ Actual", true_label)
         st.metric("📊 Confidence", format_confidence(confidence))
         
-        # Show if prediction is correct
         if prediction == true_label:
             st.success("✅ Correct Prediction!")
         else:
@@ -132,7 +116,6 @@ elif method == "Upload Image":
     )
     
     if uploaded_file:
-        # Preprocess uploaded image
         processed_array, display_img = preprocess_uploaded_image(uploaded_file)
         
         col1, col2 = st.columns(2)
@@ -141,7 +124,6 @@ elif method == "Upload Image":
             st.image(display_img, caption="Processed Image (28x28)", width=200)
         
         with col2:
-            # Make prediction
             prediction, confidence = predict_digit(model, processed_array)
             
             if prediction is not None:
@@ -149,7 +131,6 @@ elif method == "Upload Image":
                 st.info(f"**Confidence: {format_confidence(confidence)}**")
                 st.progress(confidence)
 
-# Sidebar: Model performance
 if st.sidebar.checkbox("📈 Show Model Performance"):
     with st.spinner("Evaluating model..."):
         accuracy, report = evaluate_model(model, X_test, y_test)
@@ -159,14 +140,12 @@ if st.sidebar.checkbox("📈 Show Model Performance"):
         with st.sidebar.expander("📋 Detailed Report"):
             st.text(report)
 
-# Sidebar: Model information
 if st.sidebar.checkbox("ℹ️ Model Information"):
     model_info = get_model_info(model)
     
     for key, value in model_info.items():
         st.sidebar.text(f"{key}: {value}")
 
-# Footer
 st.markdown("---")
 st.markdown("💡 **Tips:** Draw thick, clear digits for better accuracy!")
 st.markdown("Made with ❤️ using Streamlit and scikit-learn")

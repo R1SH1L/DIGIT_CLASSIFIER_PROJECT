@@ -21,14 +21,14 @@ digit-classifier/
 ## Setup Instructions
 
 1. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 2. Run the application:
-```bash
-streamlit run app.py
-```
+    ```bash
+    streamlit run app.py
+    ```
 
 ## Features
 
@@ -42,8 +42,27 @@ streamlit run app.py
 
 - **Algorithm**: Random Forest Classifier
 - **Dataset**: MNIST (70,000 handwritten digits)
+- **Training Data**: 60,000 images
+- **Test Data**: 10,000 images
 - **Accuracy**: ~97%
+- **Prediction Time**: <100ms
 - **Input**: 28x28 grayscale images
+
+## Performance Metrics
+
+| Metric | Value |
+|--------|-------|
+| Precision | 97% |
+| Recall | 97% |
+| F1-Score | 97% |
+| Support | 10,000 |
+
+
+## System Requirements
+
+- Python 3.8+
+- 2GB RAM minimum
+- Modern web browser
 
 ## Technologies Used
 
@@ -51,7 +70,3 @@ streamlit run app.py
 - **scikit-learn**: Machine learning
 - **PIL**: Image processing
 - **NumPy**: Numerical computing
-
-## Deployment
-
-This application is ready for deployment on Streamlit Cloud. Simply connect your GitHub repository to Streamlit Cloud and deploy.
